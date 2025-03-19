@@ -263,7 +263,7 @@ resource "aws_security_group" "appserver-sg" {
   egress {
     from_port   = 0
     to_port     = 0
-    protocol    = "tcp"
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -289,7 +289,7 @@ resource "aws_security_group" "database-sg" {
   egress {
     from_port   = 0
     to_port     = 0
-    protocol    = "tcp"
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -358,10 +358,7 @@ resource "aws_s3_bucket" "example" {
   bucket = "teaf19325546846237"
 }
 
-resource "aws_s3_bucket_acl" "example_acl" {
-  bucket = aws_s3_bucket.example.id
-  acl    = "private"
-}
+
 
 resource "aws_s3_bucket_versioning" "example_versioning" {
   bucket = aws_s3_bucket.example.id
@@ -377,11 +374,12 @@ resource "aws_iam_user" "one" {
 }
 
 variable "iam_users" {
-description = ""
+description = "projecTf"
 type = set(string)
 default = ["userone", "usertwo", "userthree", "userfour"]
 }
 
 resource "aws_iam_group" "two" {
   name = "ProjectTform"
+
 }
