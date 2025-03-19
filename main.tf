@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "5.73.0"
+      version = "5.91.0"
     }
   }
 }
@@ -135,10 +135,10 @@ resource "aws_route_table_association" "b" {
 
 #Create EC2 Instance
 resource "aws_instance" "webserver1" {
-  ami                    = "ami-0d5eff06f840b45e9"
+  ami                    = "ami-04aa00acb1165b32a"
   instance_type          = "t2.micro"
   availability_zone      = "us-east-1a"
-  key_name               = "rahull"
+  key_name               = "forDEV"
   vpc_security_group_ids = [aws_security_group.webserver-sg.id]
   subnet_id              = aws_subnet.web-subnet-1.id
   user_data              = "${file("apache.sh")}"
@@ -149,10 +149,10 @@ resource "aws_instance" "webserver1" {
 }
 
 resource "aws_instance" "webserver2" {
-  ami                    = "ami-0d5eff06f840b45e9"
+  ami                    = "ami-04aa00acb1165b32a"
   instance_type          = "t2.micro"
   availability_zone      = "us-east-1b"
-  key_name               = "rahull"
+  key_name               = "forDEV"
   vpc_security_group_ids = [aws_security_group.webserver-sg.id]
   subnet_id              = aws_subnet.web-subnet-2.id
   user_data              = "${file("apache.sh")}"
@@ -192,11 +192,12 @@ resource "aws_db_instance" "default" {
   allocated_storage    = 10
   db_name              = "mydb"
   engine               = "mysql"
-  engine_version       = "8.0.35"
+  engine_version       = "8.0.40"
   instance_class       = "db.t3.micro"
-  username             = "admin"
-  password             = "Raham#123568i"
+  username             = "gudU54"
+  password             = "Gud#123568i"
   skip_final_snapshot  = true
+  vpc_security_group_ids = [aws_security_group.database-sg.id]
 }
 
 resource "aws_db_subnet_group" "default" {
@@ -358,13 +359,21 @@ output "lb_dns_name" {
 
 
 resource "aws_s3_bucket" "example" {
-  bucket = "rahamtestbycketterra7788abcdededded0or40ffxxc"
+  bucket = "teaf1932554"
+}
 
-  tags = {
-    Name        = "rahamtestbycketterra7788abcdededded0or40ffxxc"
-    Environment = "Dev"
+resource "aws_s3_bucket_acl" "example_acl" {
+  bucket = aws_s3_bucket.example.id
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_versioning" "example_versioning" {
+  bucket = aws_s3_bucket.example.id
+  versioning_configuration {
+    status = "Enabled"
   }
 }
+
 
 resource "aws_iam_user" "one" {
 for_each = var.iam_users
