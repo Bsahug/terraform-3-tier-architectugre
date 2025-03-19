@@ -87,15 +87,7 @@ resource "aws_subnet" "database-subnet-2" {
   }
 }
 
-resource "aws_subnet" "database-subnet" {
-  vpc_id            = aws_vpc.my-vpc.id
-  cidr_block        = "10.0.3.0/24"
-  availability_zone = "us-east-1a"
 
-  tags = {
-    Name = "Database"
-  }
-}
 
 # Create Internet Gateway
 resource "aws_internet_gateway" "igw" {
@@ -141,7 +133,7 @@ resource "aws_instance" "webserver1" {
   key_name               = "forDEV"
   vpc_security_group_ids = [aws_security_group.webserver-sg.id]
   subnet_id              = aws_subnet.web-subnet-1.id
-  user_data              = "${file("apache.sh")}"
+  user_data              = "${filebase64("apache.sh")}"
 
   tags = {
     Name = "Web Server-1"
