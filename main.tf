@@ -38,7 +38,7 @@ resource "aws_subnet" "web-subnet-2" {
   availability_zone       = "us-east-1b"
   map_public_ip_on_launch = true
  tags = {
-    Name = "Web-lb"
+    Name = "Web-1b"
   }
 }
 
@@ -62,7 +62,7 @@ resource "aws_subnet" "application-subnet-2" {
   availability_zone       = "us-east-1b"
 
   tags = {
-    Name = "Application-lb"
+    Name = "Application-1b"
   }
 }
 
@@ -83,7 +83,7 @@ resource "aws_subnet" "database-subnet-2" {
   availability_zone = "us-east-1b"
 
   tags = {
-    Name = "Database-lb"
+    Name = "Database-1b"
   }
 }
 
@@ -133,7 +133,7 @@ resource "aws_instance" "webserver1" {
   key_name               = "forDEV"
   vpc_security_group_ids = [aws_security_group.webserver-sg.id]
   subnet_id              = aws_subnet.web-subnet-1.id
-  user_data              = "${filebase64("apache.sh")}"
+  user_data              = filebase64("apache.sh")
 
   tags = {
     Name = "Web Server-1"
@@ -147,7 +147,7 @@ resource "aws_instance" "webserver2" {
   key_name               = "forDEV"
   vpc_security_group_ids = [aws_security_group.webserver-sg.id]
   subnet_id              = aws_subnet.web-subnet-2.id
-  user_data              = "${file("apache.sh")}"
+  user_data              = filebase64("apache.sh")
 
   tags = {
     Name = "Web Server-2"
@@ -159,7 +159,7 @@ resource "aws_instance" "appserver1" {
   ami                    = "ami-0d5eff06f840b45e9"
   instance_type          = "t2.micro"
   availability_zone      = "us-east-1a"
-  key_name               = "rahull"
+  key_name               = "forDEV"
   vpc_security_group_ids = [aws_security_group.appserver-sg.id]
   subnet_id              = aws_subnet.application-subnet-1.id
   tags = {
@@ -171,7 +171,7 @@ resource "aws_instance" "appserver2" {
   ami                    = "ami-0d5eff06f840b45e9"
   instance_type          = "t2.micro"
   availability_zone      = "us-east-1b"
-  key_name               = "rahull"
+  key_name               = "forDEV"
   vpc_security_group_ids = [aws_security_group.appserver-sg.id]
   subnet_id              = aws_subnet.application-subnet-2.id
 
@@ -182,7 +182,7 @@ resource "aws_instance" "appserver2" {
 
 resource "aws_db_instance" "default" {
   allocated_storage    = 10
-  db_name              = "mydb"
+  db_name              = "projecT"
   engine               = "mysql"
   engine_version       = "8.0.40"
   instance_class       = "db.t3.micro"
@@ -190,10 +190,13 @@ resource "aws_db_instance" "default" {
   password             = "Gud#123568i"
   skip_final_snapshot  = true
   vpc_security_group_ids = [aws_security_group.database-sg.id]
+  db_subnet_group_name   = aws_db_subnet_group.default.name
+
+  depends_on = [aws_db_subnet_group.default]
+
 }
 
 resource "aws_db_subnet_group" "default" {
-  name       = "main"
   subnet_ids = [aws_subnet.database-subnet-1.id, aws_subnet.database-subnet-2.id]
 
   tags = {
@@ -260,7 +263,7 @@ resource "aws_security_group" "appserver-sg" {
   egress {
     from_port   = 0
     to_port     = 0
-    protocol    = "-1"
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -284,8 +287,8 @@ resource "aws_security_group" "database-sg" {
   }
 
   egress {
-    from_port   = 32768
-    to_port     = 65535
+    from_port   = 0
+    to_port     = 0
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -308,6 +311,7 @@ resource "aws_lb_target_group" "external-elb" {
   port     = 80
   protocol = "HTTP"
   vpc_id   = aws_vpc.my-vpc.id
+  target_type = "instance"
 }
 
 resource "aws_lb_target_group_attachment" "external-elb1" {
@@ -351,7 +355,7 @@ output "lb_dns_name" {
 
 
 resource "aws_s3_bucket" "example" {
-  bucket = "teaf1932554"
+  bucket = "teaf19325546846237"
 }
 
 resource "aws_s3_bucket_acl" "example_acl" {
@@ -368,8 +372,8 @@ resource "aws_s3_bucket_versioning" "example_versioning" {
 
 
 resource "aws_iam_user" "one" {
-for_each = var.iam_users
-name = each.value
+  for_each = var.iam_users
+  name = each.value
 }
 
 variable "iam_users" {
@@ -379,5 +383,5 @@ default = ["userone", "usertwo", "userthree", "userfour"]
 }
 
 resource "aws_iam_group" "two" {
-name = "devopswithawsbyrahamshaik"
+  name = "ProjectTform"
 }
